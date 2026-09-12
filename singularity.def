@@ -1,0 +1,23 @@
+Bootstrap: docker
+From: pytorch/pytorch:2.1.0-cuda12.8-cudnn9-runtime
+
+%files
+    . /app
+
+%post
+    apt-get update && apt-get install -y git curl
+    rm -rf /var/lib/apt/lists/*
+    cd /app
+    pip install --no-cache-dir -e .
+    pip install --no-cache-dir -r requirements.txt
+
+%environment
+    export TRITON_CACHE_DIR=/app/.triton_cache
+    export PYTHONPATH=/app:$PYTHONPATH
+
+%runscript
+    python /app/server/llada_server.py
+
+%labels
+    Author jaswanth dharmana
+    Version 1.0
